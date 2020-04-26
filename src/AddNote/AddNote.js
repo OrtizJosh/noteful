@@ -6,40 +6,51 @@ import ApiContext from '../ApiContext';
 export default class AddNote extends Component {
     static contextType = ApiContext;
 
+    static defaultProps = { folders: [] };
+
     constructor(props) {
         super(props);
         this.state = {
             noteName: '',
-            noteContent: ''
+            noteContent: '',
+            folderId: 'b0715efe-ffaf-11e8-8eb2-f2801f1b9fd1',
         };
     }
 
     handleNoteName(e) {
-        this.setState({ noteName: e.target.value });
+        this.setState({
+            noteName: e.target.value,
+        });
     }
 
     handleNoteContent(e) {
-        this.setState({ noteContent: e.target.value });
+        this.setState({
+            noteContent: e.target.value,
+        });
     }
 
-    handleSubmit = e => {
+    handleSubmit = (e) => {
         e.preventDefault();
-        const { noteName, noteContent } = this.state;
+        const { noteName, noteContent, folderId } = this.state;
         const body = JSON.stringify({
             name: noteName,
-            content: noteContent
+            content: noteContent,
+            folderId,
         });
         const opts = {
             body,
             method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            }
+            headers: { 'content-type': 'application/json' },
         };
         fetch(`${config.API_ENDPOINT}/notes`, opts)
-            .then(response => response.json())
-            .then(responseJson => this.context.addNote(responseJson));
+            .then((response) => response.json())
+            .then((responseJson) => this.context.addNote(responseJson));
         this.props.history.push('/');
+    };
+
+    idChange = (folderId) => {
+        console.log('What event is this?', folderId);
+        this.setState({ folderId });
     };
 
     validateName() {
@@ -59,6 +70,14 @@ export default class AddNote extends Component {
             return 'Minimum is 20 characters.';
         }
     }
+
+    validateFolder() {
+        const folderId = this.state.folderId;
+        if (folderId === null) {
+            return 'Folder selection required';
+        }
+    }
+
     render() {
         const nameError = this.validateName();
         const contentError = this.validateContent();
@@ -69,7 +88,7 @@ export default class AddNote extends Component {
                 <div className='form-group'>
                     <label htmlFor='noteName'>Name: </label>
                     <input
-                        onChange={e => this.handleNoteName(e)}
+                        onChange={(e) => this.handleNoteName(e)}
                         type='text'
                         className='noteName'
                         name='noteName'
@@ -79,19 +98,37 @@ export default class AddNote extends Component {
                     <br />
                     <label htmlFor='noteContent'>Content: </label>
                     <input
-                        onChange={e => this.handleNoteContent(e)}
+                        onChange={(e) => this.handleNoteContent(e)}
                         type='noteContent'
                         className='noteContent'
                         name='noteContent'
                         id='noteContent'
                     />
-
                     <ValidationError message={contentError} />
+                    <br />
+                    <select
+                        id='note-folder-select'
+                        name='folder'
+                        value={this.state.folderId}
+                        onChange={(event) => {
+                            this.idChange(event.target.value);
+                        }}
+                    >
+                        {this.context.folders.map((folder) => (
+                            <option key={folder.name} value={folder.id}>
+                                {folder.name}
+                            </option>
+                        ))}
+                    </select>
                     <br />
                     <button
                         type='submit'
                         className='noteButton'
-                        disabled={this.validateName() || this.validateContent()}
+                        disabled={
+                            this.validateName() ||
+                            this.validateContent() ||
+                            this.validateFolder()
+                        }
                     >
                         Save
                     </button>

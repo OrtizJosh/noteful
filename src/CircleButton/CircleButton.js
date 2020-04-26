@@ -9,17 +9,17 @@ export default function NavCircleButton(props) {
         props.tag,
         {
             className: ['NavCircleButton', props.className].join(' '),
-            ...otherProps
+            ...otherProps,
         },
         props.children
     );
 }
 
 NavCircleButton.defaultProps = {
-    tag: 'a'
+    tag: 'a',
 };
 
 NavCircleButton.propTypes = {
-    tag: PropTypes.string.isRequired,
-    children: PropTypes.array.isRequired
+    tag: PropTypes.func.isRequired,
+    children: PropTypes.array.isRequired,
 };

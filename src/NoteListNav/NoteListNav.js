@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { NavLink, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CircleButton from '../CircleButton/CircleButton';
@@ -14,7 +15,7 @@ export default class NoteListNav extends React.Component {
         return (
             <div className='NoteListNav'>
                 <ul className='NoteListNav__list'>
-                    {folders.map(folder => (
+                    {folders.map((folder) => (
                         <li key={folder.id}>
                             <NavLink
                                 className='NoteListNav__folder-link'
